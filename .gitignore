@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Streamlit local state
+.streamlit/config.toml
+
+# Local Data and Exports
+*.csv
+*.xlsx
+local_datasets/
+fine_tuned_model/

@@ -1,0 +1,12 @@
+streamlit
+langchain
+langchain-core
+langchain-community
+langchain-openai
+langgraph
+transformers
+datasets
+accelerate
+peft
+pandas
+torch

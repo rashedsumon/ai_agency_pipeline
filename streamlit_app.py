@@ -32,7 +32,7 @@ with tab_production:
     user_input_area = st.text_area("Input Data (NotebookLM Consolidated Topic Sources):", value=default_input, height=200)
     
     if st.button("Execute Automated Production Graph"):
-        if not os.environ.get("OPENAI_API_KEY"):
+        if not os.environ.get("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"):
             st.warning("⚠️ Application running in sandbox/simulation mode. Provide an OPENAI_API_KEY environment variable to enable live connection to model nodes.")
         
         with st.spinner("LangGraph agent executing node sequences..."):

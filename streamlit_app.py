@@ -27,47 +27,53 @@ tab_production, tab_hf_scaffolding, tab_system_logs = st.tabs([
 with tab_production:
     st.write("### Stage 1 & 2: Ingest Raw Summaries & Orchestrate Prompt Extraction via LangGraph")
     
+    # Check if key is available globally to give immediate feedback in UI banner
+    if not os.environ.get("OPENAI_API_KEY"):
+        st.error("⚠️ `OPENAI_API_KEY` environment variable missing. Please add it to your Streamlit Cloud Secrets or local environment variables before executing the production graph.")
+    
     # Pre-populate raw text based on the Metformin real-life example
     default_input = data_loader.load_raw_real_life_example()
     user_input_area = st.text_area("Input Data (NotebookLM Consolidated Topic Sources):", value=default_input, height=200)
     
     if st.button("Execute Automated Production Graph"):
-        if not os.environ.get("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"):
-            st.warning("⚠️ Application running in sandbox/simulation mode. Provide an OPENAI_API_KEY environment variable to enable live connection to model nodes.")
-        
         with st.spinner("LangGraph agent executing node sequences..."):
-            # Initial state mapping execution
-            initial_state = {
-                "raw_context": user_input_area,
-                "video_script": "",
-                "production_sheet": []
-            }
-            
-            # Compile and run Graph state
-            graph = agent_instance.compile_pipeline_graph()
-            final_output_state = graph.invoke(initial_state)
-            
-            st.success("✅ Automation Run Complete!")
-            
-            # Displaying Structured Model Output results cleanly 
-            st.write("#### Generated Short-Form Video Script")
-            st.info(final_output_state.get("video_script", "No text script returned."))
-            
-            st.write("#### Stage 3 Model Output: Standardized Bulk CSV Table for Canva / CapCut Automation")
-            sheet_data = final_output_state.get("production_sheet", [])
-            df_sheet = convert_production_sheet_to_dataframe(sheet_data)
-            
-            if not df_sheet.empty:
-                st.dataframe(df_sheet, use_container_width=True)
+            try:
+                # Initial state mapping execution
+                initial_state = {
+                    "raw_context": user_input_area,
+                    "video_script": "",
+                    "production_sheet": []
+                }
                 
-                # Ready mapping generation to simulate Canva bulk drop
-                csv_bytes = df_sheet.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    label="📥 Export Bulk Creation CSV for Canva/CapCut",
-                    data=csv_bytes,
-                    file_name="canva_bulk_production_sheet.csv",
-                    mime="text/csv"
-                )
+                # Compile and run Graph state
+                graph = agent_instance.compile_pipeline_graph()
+                final_output_state = graph.invoke(initial_state)
+                
+                st.success("✅ Automation Run Complete!")
+                
+                # Displaying Structured Model Output results cleanly 
+                st.write("#### Generated Short-Form Video Script")
+                st.info(final_output_state.get("video_script", "No text script returned."))
+                
+                st.write("#### Stage 3 Model Output: Standardized Bulk CSV Table for Canva / CapCut Automation")
+                sheet_data = final_output_state.get("production_sheet", [])
+                df_sheet = convert_production_sheet_to_dataframe(sheet_data)
+                
+                if not df_sheet.empty:
+                    st.dataframe(df_sheet, use_container_width=True)
+                    
+                    # Ready mapping generation to simulate Canva bulk drop
+                    csv_bytes = df_sheet.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="📥 Export Bulk Creation CSV for Canva/CapCut",
+                        data=csv_bytes,
+                        file_name="canva_bulk_production_sheet.csv",
+                        mime="text/csv"
+                    )
+            except ValueError as val_err:
+                st.error(f"Configuration Error: {str(val_err)}")
+            except Exception as e:
+                st.error(f"An unexpected error occurred during execution: {str(e)}")
 
 with tab_hf_scaffolding:
     st.write("### Model Personalization and Scale Management Scaffolding")

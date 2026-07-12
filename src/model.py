@@ -1,3 +1,4 @@
+import os
 from typing import Annotated, Dict, Any, List
 from typing_extensions import TypedDict
 from langchain_core.prompts import ChatPromptTemplate
@@ -14,8 +15,24 @@ class PipelineState(TypedDict):
 # --- Automation Pipeline Agent Class ---
 class VideoProductionAgent:
     def __init__(self, model_name: str = "gpt-4o-mini"):
-        # Initialize LangChain LLM abstraction
-        self.llm = ChatOpenAI(model_name=model_name, temperature=0.3)
+        self.model_name = model_name
+        self._llm = None  # Lazy initialization placeholder
+
+    @property
+    def llm(self):
+        """Lazy loader logic to prevent runtime initialization crashes when keys are missing."""
+        if self._llm is None:
+            # Check for API Key presence before triggering LangChain validation
+            api_key = os.environ.get("OPENAI_API_KEY")
+            if not api_key:
+                raise ValueError("Missing Credentials: The OPENAI_API_KEY environment variable is not set.")
+            
+            self._llm = ChatOpenAI(
+                model_name=self.model_name, 
+                temperature=0.3,
+                api_key=api_key
+            )
+        return self._llm
 
     def compile_pipeline_graph(self):
         """Constructs and compiles the deterministic agent graph logic using LangGraph."""
@@ -97,17 +114,14 @@ def execute_stub_hf_fine_tune(dataset_path: str, output_model_dir: str = "fine_t
     from datasets import load_dataset
     import torch
 
-    # Defensive setup check for training environments
     try:
         tokenizer = AutoTokenizer.from_pretrained("gpt2")
         tokenizer.pad_token = tokenizer.eos_token
         model = AutoModelForCausalLM.from_pretrained("gpt2")
         
-        # Simple tokenization processing mapping
         def tokenize_func(examples):
             return tokenizer(examples["text"], padding="max_length", truncation=True, max_length=128)
         
-        # Load sample localized layout 
         dummy_dataset = load_dataset('csv', data_files=dataset_path)
         tokenized_datasets = dummy_dataset.map(tokenize_func, batched=True)
 
@@ -126,7 +140,6 @@ def execute_stub_hf_fine_tune(dataset_path: str, output_model_dir: str = "fine_t
             train_dataset=tokenized_datasets["train"],
         )
         
-        # In actual production run: trainer.train() would execute here
         return "Scaffolding verification complete. Trainer configuration verified successfully."
     except Exception as e:
         return f"Fine-tuning structural verification skipped or encountered exception: {str(e)}"

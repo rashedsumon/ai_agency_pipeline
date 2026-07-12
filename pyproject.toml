@@ -7,7 +7,7 @@ authors = ["Your Agency Name <info@youragency.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^*"
 streamlit = "*"
 langchain = "*"
 langchain-core = "*"

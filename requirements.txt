@@ -10,3 +10,4 @@ accelerate
 peft
 pandas
 torch
+fastapi[standard]

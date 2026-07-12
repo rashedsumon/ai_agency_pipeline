@@ -20,7 +20,7 @@ accelerate = "*"
 peft = "*"
 pandas = "*"
 torch = "*"
-fastapi = "*"
+fastapi[standard] = "*"
 uvicorn = "*"
 pydantic = "*"
 

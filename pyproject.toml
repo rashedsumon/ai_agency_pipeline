@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "ai-agency-pipeline"
+version = "0.1.0"
+description = "A production-grade GenAI tool transforming raw topical summaries into multi-modal video asset scripts."
+authors = ["Your Agency Name <info@youragency.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+streamlit = "*"
+langchain = "*"
+langchain-core = "*"
+langchain-community = "*"
+langchain-openai = "*"
+langgraph = "*"
+transformers = "*"
+datasets = "*"
+accelerate = "*"
+peft = "*"
+pandas = "*"
+torch = "*"
+fastapi = "*"
+uvicorn = "*"
+pydantic = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
